@@ -5,4 +5,5 @@ class User {
     public function sayHello(): string {
         return "Halo, saya {$this->name}";
     }
+    
 }
