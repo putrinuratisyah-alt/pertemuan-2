@@ -1,37 +1,85 @@
 <?php
+
 class Account {
-    public string $owner;          // Dapat diakses dari mana saja
-    protected float $balance;     // Hanya dapat diakses dari class ini atau subclass-nya
-    private string $pin;          // Hanya dapat diakses dari dalam class ini
+    // Properti ini digunakan untuk menyimpan data yang diatur melalui __set
+    private array $properties = [];
 
-    public function __construct(string $owner, float $balance, string $pin) {
-        $this->owner = $owner;
-        $this->balance = $balance;
-        $this->pin = $pin;
+    // ===========================================
+    // MAGIC METHOD 1: __set
+    // Dipanggil saat mengatur nilai ke properti yang tidak terdefinisi.
+    // Contoh: $account->balance = 50000;
+    // ===========================================
+    public function __set(string $name, mixed $value): void {
+        echo "LOG: Mengatur properti '$name' dengan nilai '$value'\n";
+        $this->properties[$name] = $value;
     }
 
-    public function getBalance(string $pin): float {
-        if ($pin === $this->pin) return $this->balance;
-        throw new Exception("PIN salah");
+    // ===========================================
+    // MAGIC METHOD 2: __get
+    // Dipanggil saat mengakses properti yang tidak terdefinisi.
+    // Contoh: echo $account->balance;
+    // ===========================================
+    public function __get(string $name): mixed {
+        echo "LOG: Mengakses properti '$name'\n";
+        if (isset($this->properties[$name])) {
+            return $this->properties[$name];
+        }
+        return "ERROR: Properti '$name' tidak ditemukan.\n";
+    }
+
+    // ===========================================
+    // MAGIC METHOD 3: __isset
+    // Dipanggil saat menjalankan isset() atau empty() pada properti yang tidak terdefinisi.
+    // Contoh: isset($account->balance);
+    // ===========================================
+    public function __isset(string $name): bool {
+        echo "LOG: Mengecek apakah properti '$name' ada...\n";
+        return isset($this->properties[$name]);
+    }
+
+    // ===========================================
+    // MAGIC METHOD 4: __unset
+    // Dipanggil saat menjalankan unset() pada properti yang tidak terdefinisi.
+    // Contoh: unset($account->balance);
+    // ===========================================
+    public function __unset(string $name): void {
+        echo "LOG: Menghapus properti '$name'...\n";
+        unset($this->properties[$name]);
     }
 }
 
-// Uji akses dari luar class
-$acc = new Account("Rani", 5000, "1234");
-echo "Owner: " . $acc->owner . PHP_EOL;                // Boleh (public)
-echo "Balance via method: " . $acc->getBalance("1234") . PHP_EOL; // Boleh (public method)
+// ===========================================
+// Pengujian
+// ===========================================
+$account = new Account();
 
-// echo $acc->balance; // ERROR: Cannot access protected property Account::$balance
-// echo $acc->pin;     // ERROR: Cannot access private property Account::$pin
+echo "--- 1. Uji __set (Mengatur Properti) ---\n";
+// Memanggil __set karena 'balance' tidak ada di Class Account
+$account->balance = 1000000;
+$account->currency = "IDR";
 
-// Uji akses dari subclass
-class PremiumAccount extends Account {
-    public function debugBalance(): string {
-        // $this->balance boleh diakses karena protected
-        // $this->pin tidak boleh diakses karena private
-        return "Balance (via subclass): " . $this->balance; 
-    }
+echo "\n--- 2. Uji __get (Mengakses Properti) ---\n";
+// Memanggil __get
+echo "Balance: " . $account->balance . "\n";
+echo "Currency: " . $account->currency . "\n";
+
+echo "\n--- 3. Uji __isset (Mengecek Properti) ---\n";
+// Memanggil __isset
+if (isset($account->balance)) {
+    echo "Status Balance: Ditemukan.\n";
+}
+if (isset($account->name)) { // Properti yang tidak pernah diset
+    echo "Status Name: Ditemukan.\n";
+} else {
+    echo "Status Name: Tidak ditemukan.\n";
 }
 
-$pAcc = new PremiumAccount("Budi", 10000, "9999");
-echo $pAcc->debugBalance() . PHP_EOL; // Boleh
+echo "\n--- 4. Uji __unset (Menghapus Properti) ---\n";
+// Memanggil __unset
+unset($account->balance);
+
+echo "\n--- 5. Uji Akses Setelah dihapus ---\n";
+// Memanggil __get lagi, hasilnya ERROR karena sudah dihapus
+echo "Balance Baru: " . $account->balance . "\n";
+
+?>
