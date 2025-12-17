@@ -21,5 +21,6 @@ $c = clone $a;
 $c->name = "Tono";
 $c->age = 40;
 
+
 echo "Objek \$a setelah \$c diubah (Clone): " . $a->name . ", " . $a->age . PHP_EOL;
 echo "Objek \$c (Salinan Independen): " . $c->name . ", " . $c->age . PHP_EOL;
