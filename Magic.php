@@ -8,6 +8,7 @@ class Magic {
     // Dipanggil saat objek diperlakukan sebagai string
     public function __toString(): string {
         return "Ini adalah objek Magic";
+        
     }
 }
 
