@@ -1,29 +1,29 @@
 <?php
+
 class Builder {
     private string $text = "";
 
-    // Mengembalikan $this untuk memungkinkan method chaining
-    public function add(string $s): self {
-        $this->text .= $s;
-        return $this; // Mengembalikan objek saat ini
+    public function add(string $text): self {
+        $this->text .= $text;
+        return $this; 
     }
-
-    // Method baru untuk eksperimen
+    
     public function upper(): self {
         $this->text = strtoupper($this->text);
-        return $this; // Mengembalikan objek saat ini
+        return $this;
     }
 
     public function get(): string {
         return $this->text;
     }
 }
+// ===============================================
+// Pengujian: Menggunakan method chaining, termasuk upper()
+// ===============================================
 
-// Contoh Fluent Interface (Method Chaining)
-$output = (new Builder())
-    ->add("Halo ")
-    ->add("dunia")
-    ->upper()
-    ->get();
-
-echo $output . PHP_EOL; // Output: HALO DUNIA
+$result = (new Builder())
+    ->add("halo ")  
+    ->add("dunia")  
+    ->upper()      
+    ->get();      
+echo "Hasil Uji Upper(): " . $result . PHP_EOL;
